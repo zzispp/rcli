@@ -1,23 +1,9 @@
+use super::verify_input_file;
 use clap::Parser;
 use std::fmt;
 use std::fmt::{Formatter, write};
-use std::path::Path;
 use std::str::FromStr;
 
-#[derive(Parser, Debug)]
-#[command(name = "rcli",version = "0.0.1",author,about="Rust Cli ",long_about = None)]
-pub struct Opts {
-    #[command(subcommand)]
-    pub cmd: SubCommand,
-}
-
-#[derive(Debug, Parser)]
-pub enum SubCommand {
-    #[command(name = "csv", about = "Rust CLI for CSV files.")]
-    Csv(CsvOpts),
-    #[command(name = "genpass", about = "gen password CLI")]
-    GenPass(GenPassOpts),
-}
 
 #[derive(Debug, Clone, Copy)]
 pub enum OutputFormat {
@@ -44,23 +30,6 @@ pub struct CsvOpts {
     pub header: bool,
 }
 
-#[derive(Debug, Parser)]
-pub struct GenPassOpts {
-    #[arg(long, default_value_t = 16)]
-    pub length: u8,
-
-    #[arg(long, default_value_t = true)]
-    pub uppercase: bool,
-
-    #[arg(long, default_value_t = true)]
-    pub lowercase: bool,
-
-    #[arg(long, default_value_t = true)]
-    pub number: bool,
-
-    #[arg(long, default_value_t = true)]
-    pub symbol: bool,
-}
 
 fn parse_format(format: &str) -> Result<OutputFormat, anyhow::Error> {
     format.parse()
@@ -95,10 +64,3 @@ impl fmt::Display for OutputFormat {
     }
 }
 
-fn verify_input_file(file_name: &str) -> Result<String, &'static str> {
-    if Path::new(file_name).exists() {
-        Ok(file_name.to_string())
-    } else {
-        Err("File does not exist")
-    }
-}
